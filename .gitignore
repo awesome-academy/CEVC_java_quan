@@ -1,22 +1,104 @@
-### AL ###
-#Template for AL projects for Dynamics 365 Business Central
-#launch.json folder
+# ===============================================
+# 🧩 Java / Spring Boot
+# ===============================================
+/target/
+/build/
+/out/
+/bin/
+
+# Logs
+*.log
+*.out
+*.pid
+*.seed
+
+# Spring Boot specific
+*.jar
+*.war
+*.ear
+!src/main/resources/static/
+!src/main/resources/templates/
+
+# ===============================================
+# 🧩 IntelliJ IDEA / Eclipse / VSCode
+# ===============================================
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VS Code
 .vscode/
-#Cache folder
-.alcache/
-#Symbols folder
-.alpackages/
-#Snapshots folder
-.snapshots/
-#Testing Output folder
-.output/
-#Extension App-file
-*.app
-#Rapid Application Development File
-rad.json
-#Translation Base-file
-*.g.xlf
-#License-file
-*.flf
-#Test results file
-TestResults.xml
+
+# ===============================================
+# 🧩 Environment & Credentials
+# ===============================================
+.env
+.env.local
+.env.staging
+.env.production
+*.key
+*.pem
+*.crt
+
+# ===============================================
+# 🧩 OS & System Files
+# ===============================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ===============================================
+# 🧩 Dependency Managers
+# ===============================================
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# Gradle (in case you switch later)
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Node (for Tailwind, if used)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===============================================
+# 🧩 Temporary / IDE cache
+# ===============================================
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+*.orig
+*.rej
+*.class
+
+# ===============================================
+# 🧩 Database / Migration temp files
+# ===============================================
+*.sql
+*.db
+*.sqlite
+flyway.conf
+db/migration/tmp/
+
+# ===============================================
+# 🧩 Reports & Coverage
+# ===============================================
+/target/site/
+/test-output/
+/jacoco.exec
+/coverage/
+/surefire-reports/
