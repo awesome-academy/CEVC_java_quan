@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Layout</title>
+    <link href="/css/tailwind.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<header class="bg-blue-600 text-white p-4">Admin Header</header>
+<main class="p-4">
+    <div th:insert="~{::content}"></div>
+</main>
+<footer class="bg-gray-800 text-white p-2 mt-4">Admin Footer</footer>
+</body>
+</html>

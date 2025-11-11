@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME:member-management-system}
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:member_management_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:true}
+    properties:
+      hibernate:
+        format_sql: ${JPA_FORMAT_SQL:true}
+
+  flyway:
+    enabled: ${FLYWAY_ENABLED:false}
+    baseline-on-migrate: ${FLYWAY_BASELINE_ON_MIGRATE:true}
+    locations: ${FLYWAY_LOCATIONS:classpath:db/migration}
+
+server:
+  port: ${SERVER_PORT:8088}
