@@ -19,15 +19,15 @@ public class ActivityLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "actor_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "actor_id")
     private Member actor;
 
-    @ManyToOne
-    @JoinColumn(name = "actor_type_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "actor_type_id")
     private ActorType actorType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "action_type_id", nullable = false)
     private ActionType actionType;
 
