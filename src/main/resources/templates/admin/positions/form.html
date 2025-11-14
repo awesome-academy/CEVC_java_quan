@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"
+      th:replace="~{admin/layout/main-layout :: layout(pageTitleKey=${positionDTO.id == null} ? 'admin.positions.form.title.create' : 'admin.positions.form.title.edit', content=~{::body}, activePage='positions')}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<h1 class="text-2xl font-semibold text-gray-800"
+    th:text="${positionDTO.id == null} ? #{admin.positions.form.title.create} : #{admin.positions.form.title.edit}">
+    Form Title
+</h1>
+<hr class="my-4"/>
+
+<div class="bg-white shadow-md rounded-lg p-6 max-w-lg">
+    <!--
+      - th:object: Binding form với PositionDTO
+      - th:action: Decide on POST URL based on whether it's Create or Edit
+    -->
+    <form method="POST"
+          th:action="${positionDTO.id == null} ? @{/admin/positions/save} : @{/admin/positions/update/{id}(id=${positionDTO.id})}"
+          th:object="${positionDTO}">
+
+        <!-- (Optional) Pass ID if it is an Edit form -->
+        <input th:field="*{id}" th:if="${positionDTO.id != null}" type="hidden"/>
+
+        <!-- Field Name (Validation) -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700" for="name"
+                   th:text="#{admin.positions.form.label.name}">Position Name (*)</label>
+            <input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                   id="name" th:classappend="${#fields.hasErrors('name')} ? 'border-red-500' : ''"
+                   th:field="*{name}"
+                   type="text"/>
+
+            <p class="mt-1 text-sm text-red-600" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></p>
+        </div>
+
+        <!-- Field Abbreviation -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700" for="abbreviation"
+                   th:text="#{admin.positions.form.label.abbreviation}">Abbreviation</label>
+            <input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                   id="abbreviation" th:classappend="${#fields.hasErrors('abbreviation')} ? 'border-red-500' : ''"
+                   th:field="*{abbreviation}"
+                   type="text"/>
+            <p class="mt-1 text-sm text-red-600" th:errors="*{abbreviation}"
+               th:if="${#fields.hasErrors('abbreviation')}"></p>
+        </div>
+
+        <!-- Action -->
+        <div class="mt-6 flex items-center justify-end gap-x-4">
+            <a class="text-sm font-medium text-gray-600 hover:text-gray-800" th:href="@{/admin/positions}"
+               th:text="#{admin.positions.form.button.cancel}">
+                Cancel
+            </a>
+            <button class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" th:text="#{admin.positions.form.button.save}"
+                    type="submit">
+                Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
