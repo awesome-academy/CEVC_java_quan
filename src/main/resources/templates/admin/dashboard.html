@@ -1,57 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title th:text="${pageTitle} ?: 'Admin Dashboard'">Admin</title>
-    <link rel="stylesheet" th:href="@{/css/tailwind.css}"/>
-</head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+<html lang="en"
+      th:replace="~{admin/layout/main-layout :: layout(pageTitleKey='admin.dashboard.title', content=~{::content}, activePage='dashboard')}"
+      xmlns:th="http://www.thymeleaf.org">
 
-<div class="flex h-screen">
+<div th:fragment="content">
+    <h2 class="text-3xl font-semibold text-gray-800" th:text="#{admin.dashboard.welcome}">Welcome to MMS!</h2>
+    <p class="mt-2 text-gray-600" th:text="#{admin.dashboard.description}">
+        This is your admin dashboard...
+    </p>
 
-    <aside class="w-64 bg-gray-800 text-white flex-shrink-0">
-        <div class="p-4 text-2xl font-semibold text-center">
-            MMS Admin
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold" th:text="#{admin.dashboard.card.members}">Total Members</h3>
+            <p class="text-4xl font-bold mt-2">15</p>
         </div>
-        <nav>
-            <ul>
-                <li class="p-4 hover:bg-gray-700">
-                    <a class="block" th:href="@{/admin/dashboard}">Dashboard</a>
-                </li>
-                <li class="p-4 hover:bg-gray-700">
-                    <a class="block" href="#">Members</a>
-                </li>
-                <li class="p-4 hover:bg-gray-700">
-                    <a class="block" href="#">Teams</a>
-                </li>
-                <li class="p-4 hover:bg-gray-700">
-                    <a class="block" href="#">Projects</a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-
-    <div class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white shadow-md p-4 flex justify-between items-center">
-            <h1 class="text-2xl font-semibold" th:text="${pageTitle} ?: 'Dashboard'">Dashboard</h1>
-            <div>
-                <span class="mr-4" th:text="${#authentication?.name ?: 'Admin'}">Welcome!</span>
-                <form class="inline ml-2" method="POST" th:action="@{/admin/logout}">
-                    <button class="text-indigo-600 hover:text-indigo-800 font-semibold" type="submit">
-                        Logout
-                    </button>
-                </form>
-            </div>
-        </header>
-
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-            <div th:fragment="content">
-                <p>Welcome to the main content area.</p>
-            </div>
-        </main>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold" th:text="#{admin.dashboard.card.projects}">Active Projects</h3>
+            <p class="text-4xl font-bold mt-2">4</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold" th:text="#{admin.dashboard.card.teams}">Active Teams</h3>
+            <p class="text-4xl font-bold mt-2">7</p>
+        </div>
     </div>
 </div>
-
-</body>
 </html>

@@ -1,51 +1,73 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" th:fragment="layout(pageTitleKey, content, activePage)"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title th:text="${pageTitle} ?: 'Admin Dashboard'">Admin</title>
+    <title th:text="#{${pageTitleKey}} + ' - ' + #{app.title.suffix}">MMS Admin</title>
     <link rel="stylesheet" th:href="@{/css/tailwind.css}"/>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
+<body class="bg-gray-100">
 <div class="flex h-screen">
-    <aside class="w-64 bg-gray-800 text-white flex-shrink-0">
-        <div class="p-4 text-2xl font-semibold text-center">
-            MMS Admin
+    <!-- Sidebar -->
+    <div class="w-64 bg-white shadow-md">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-indigo-600">MMS Admin</h1>
         </div>
-        <nav>
-            <ul>
-                <li class="p-4 hover:bg-gray-700">
-                    <a class="block" th:href="@{/admin/dashboard}">Dashboard</a>
-                </li>
-                <li class="p-4 hover:bg-gray-700">
-                    <a class="block" href="#">Members</a>
-                </li>
-                <li class="p-4 hover:bg-gray-700">
-                    <a class="block" href="#">Teams</a>
-                </li>
-                <li class="p-4 hover:bg-gray-700">
-                    <a class="block" href="#">Projects</a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
+        <nav class="mt-6">
+            <!-- (Menu Dashboard) -->
+            <a class="block px-6 py-3 text-gray-700 hover:bg-gray-100"
+               th:classappend="${activePage == 'dashboard'} ? 'bg-gray-200' : ''"
+               th:href="@{/admin/dashboard}"
+               th:text="#{layout.sidebar.dashboard}">
+                Dashboard
+            </a>
 
+            <a class="block px-6 py-3 text-gray-700 hover:bg-gray-100"
+               th:classappend="${activePage == 'positions'} ? 'bg-gray-200' : ''"
+               th:href="@{/admin/positions}"
+               th:text="#{layout.sidebar.positions}">
+                Positions Management
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white shadow-md p-4 flex justify-between items-center">
-            <h1 class="text-2xl font-semibold" th:text="${pageTitle} ?: 'Dashboard'">Dashboard</h1>
-            <div>
-                <span>Welcome, Admin!</span>
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                <div class="text-sm">
+                    <a class="text-indigo-600 hover:text-indigo-800" th:href="@{?(lang=en)}">EN</a>
+                    <span class="mx-1">|</span>
+                    <a class="text-indigo-600 hover:text-indigo-800" th:href="@{?(lang=vi)}">VI</a>
+                </div>
+                <div class="flex items-center">
+                    <span class="mr-4"><th:block th:text="#{layout.header.welcome}">Welcome,</th:block> <strong
+                            sec:authentication="name">Admin</strong>!</span>
+                    <form class="inline" method="POST" th:action="@{/admin/logout}">
+                        <button class="text-indigo-600 hover:text-indigo-800" th:text="#{layout.header.logout}"
+                                type="submit">Logout
+                        </button>
+                    </form>
+                </div>
             </div>
         </header>
 
+        <!-- Content Area -->
         <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-            <div th:fragment="content">
-                <p>Welcome to the main content area.</p>
+            <div class="container mx-auto">
+                <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-md" th:if="${successMessageKey}">
+                    <p th:text="#{${successMessageKey}}"></p>
+                </div>
+                <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-md" th:if="${errorMessageKey}">
+                    <p th:text="#{${errorMessageKey}}"></p>
+                </div>
+                <div th:replace="${content}"></div>
             </div>
         </main>
     </div>
 </div>
-
 </body>
 </html>

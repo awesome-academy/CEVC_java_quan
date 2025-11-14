@@ -11,6 +11,7 @@ import com.example.member_management_system.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,52 +23,76 @@ public class ActivityLogService {
     private final ActionTypeRepository actionTypeRepository;
     private final ActorTypeRepository actorTypeRepository;
 
-    public void logActivity(String email, String actionCode, String description) {
+    /**
+     * === MAIN FUNCTION (5 PARAMETERS) ===
+     * Used for CRUD operations and others
+     * Log with full information about the affected object.
+     *
+     * @param email       Actor's email
+     * @param actionCode  Action code (CREATE, UPDATE, DELETE, etc.)
+     * @param description Description of the action
+     * @param targetTable Name of the affected table (vd: "positions")
+     * @param targetId    ID of the affected record
+     */
+    @Transactional
+    public void logActivity(String email, String actionCode, String description, String targetTable, Long targetId) {
         try {
-            Member actor = memberRepository.findByEmailWithRoles(email)
-                    .orElse(null);
+            // Get Actor (The person performing the action)
+            Member actor = memberRepository.findByEmailWithRoles(email).orElse(null);
 
+            // Get ActionType (Type of action)
             ActionType actionType = actionTypeRepository.findByCode(actionCode)
-                    .orElse(null);
+                    .orElseThrow(() -> new RuntimeException("ActionType not found: " + actionCode));
 
-            if (actionType == null) {
-                log.warn("ActionType not found: {}", actionCode);
-                return;
+            // Get ActorType (Type of actor: ADMIN or USER)
+            String actorTypeCode;
+            if (actor != null && actor.getRoles() != null) {
+                actorTypeCode = actor.getRoles().stream()
+                        .anyMatch(r -> r.getName().equals("ROLE_ADMIN"))
+                        ? "ADMIN" : "USER";
+            } else {
+                actorTypeCode = "USER";
             }
 
-            ActorType actorType = null;
-            if (actor != null && actor.getRoles() != null && !actor.getRoles().isEmpty()) {
-                boolean isAdmin = actor.getRoles().stream()
-                        .anyMatch(role -> "ROLE_ADMIN".equals(role.getName()));
-                String actorTypeCode = isAdmin ? "ADMIN" : "USER";
-                actorType = actorTypeRepository.findByCode(actorTypeCode).orElse(null);
-            }
+            ActorType actorType = actorTypeRepository.findByCode(actorTypeCode)
+                    .orElseThrow(() -> new RuntimeException("ActorType not found: " + actorTypeCode));
 
-            if (actorType == null) {
-                actorType = actorTypeRepository.findByCode("USER").orElse(null);
-            }
-
-            if (actorType == null) {
-                log.warn("ActorType not found");
-                return;
-            }
-
+            // Create Log Entry
             ActivityLog logEntry = new ActivityLog();
-
-            logEntry.setActionType(actionType);
+            logEntry.setActor(actor);
             logEntry.setActorType(actorType);
+            logEntry.setActionType(actionType);
             logEntry.setDescription(description);
-            logEntry.setTargetTable(Member.class.getSimpleName());
-            if (actor != null) {
-                logEntry.setActor(actor);
-                logEntry.setTargetId(actor.getId());
-            }
+            logEntry.setTargetTable(targetTable);
+            logEntry.setTargetId(targetId);
 
+            // Save Log Entry
             logRepository.save(logEntry);
-            log.debug("Activity logged: {} - {}", actionCode, description);
 
         } catch (Exception e) {
             log.error("Unable to write activity log: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * === UTILITY FUNCTION (3 PARAMETERS) ===
+     * Used for Authentication (SecurityEventListener)
+     * Automatically assign targetTable="members" and targetId=actor.id
+     *
+     * @param email       Actor's email
+     * @param actionCode  Action code (LOGIN, LOGOUT)
+     * @param description Description of the action
+     */
+    @Transactional
+    public void logActivity(String email, String actionCode, String description) {
+        try {
+            Member actor = memberRepository.findByEmailWithRoles(email).orElse(null);
+            Long targetId = (actor != null) ? actor.getId() : null;
+
+            logActivity(email, actionCode, description, Member.class.getSimpleName(), targetId);
+
+        } catch (Exception e) {
+            log.error("Unable to write activity log (auth): {}", e.getMessage(), e);
         }
     }
 }
