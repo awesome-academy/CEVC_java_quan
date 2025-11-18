@@ -30,6 +30,13 @@
                th:text="#{layout.sidebar.positions}">
                 Positions Management
             </a>
+
+            <a class="block px-6 py-3 text-gray-700 hover:bg-gray-100"
+               th:classappend="${activePage == 'skills'} ? 'bg-gray-200' : ''"
+               th:href="@{/admin/skills}"
+               th:text="#{layout.sidebar.skills}">
+                Skill Management
+            </a>
         </nav>
     </div>
 
