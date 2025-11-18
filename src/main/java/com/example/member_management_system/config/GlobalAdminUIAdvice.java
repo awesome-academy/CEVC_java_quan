@@ -19,11 +19,16 @@ public class GlobalAdminUIAdvice {
     public String addActivePage(HttpServletRequest request) {
         String servletPath = request.getServletPath();
 
+        if (servletPath.startsWith("/admin/dashboard")) {
+            return "dashboard";
+        }
+        
         if (servletPath.startsWith("/admin/positions")) {
             return "positions";
         }
-        if (servletPath.startsWith("/admin/dashboard")) {
-            return "dashboard";
+
+        if (servletPath.startsWith("/admin/skills")) {
+            return "skills";
         }
 
         return "";

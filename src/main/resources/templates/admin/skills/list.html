@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en"
+      th:replace="~{admin/layout/main-layout :: layout(pageTitleKey='admin.skills.title', content=~{::body}, activePage='skills')}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-semibold text-gray-800" th:text="#{admin.skills.title}">Skill List</h1>
+    <div>
+        <a class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 mr-2"
+           th:href="@{/admin/skills/export}"
+           th:text="#{admin.skills.button.export}">Export CSV</a>
+        <a class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" th:href="@{/admin/skills/new}"
+           th:text="#{admin.skills.button.new}">Create New Skill</a>
+    </div>
+</div>
+
+<div class="bg-white shadow-md rounded-lg p-4 mb-4">
+    <form enctype="multipart/form-data" method="POST" th:action="@{/admin/skills/import}">
+        <label class="block text-sm font-medium text-gray-700" for="file" th:text="#{admin.skills.import.label}">Select
+            CSV:</label>
+        <div class="mt-1 flex items-center">
+            <input class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                   id="file" name="file"
+                   required
+                   type="file">
+            <button class="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    th:text="#{admin.skills.button.import}"
+                    type="submit">Import
+            </button>
+        </div>
+    </form>
+</div>
+<div class="mb-4 p-4 bg-red-100 text-red-700 rounded-md" th:if="${errorMessages}">
+    <p><strong>Import failed with errors:</strong></p>
+    <ul class="list-disc list-inside">
+        <li th:each="err : ${errorMessages}" th:text="${err}"></li>
+    </ul>
+</div>
+
+<div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+        <tr>
+            <th class="px-6 py-3 text-left" th:text="#{admin.skills.table.name}">Name</th>
+            <th class="px-6 py-3 text-left" th:text="#{admin.skills.table.level}">Default Level</th>
+            <th class="px-6 py-3 text-left" th:text="#{admin.skills.table.years}">Default Years</th>
+            <th class="px-6 py-3 text-right" th:text="#{admin.skills.table.actions}">Actions</th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+        <tr th:each="skill : ${skillPage.content}">
+            <td class="px-6 py-4" th:text="${skill.name}">Java</td>
+            <td class="px-6 py-4" th:text="${skill.level}">Senior</td>
+            <td class="px-6 py-4" th:text="${skill.usedYears}">5</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <a class="text-indigo-600 hover:text-indigo-900" th:href="@{/admin/skills/edit/{id}(id=${skill.id})}"
+                   th:text="#{admin.skills.action.edit}">Edit</a>
+
+                <form class="inline ml-4" method="POST"
+                      onsubmit="return confirm(this.getAttribute('data-confirm-message'));"
+                      th:action="@{/admin/skills/delete/{id}(id=${skill.id})}"
+                      th:data-confirm-message="#{admin.skills.delete.confirm}">
+                    <button class="text-red-600 hover:text-red-900" th:text="#{admin.skills.action.delete}"
+                            type="submit">Delete
+                    </button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${skillPage.empty}">
+            <td class="px-6 py-4 text-center text-gray-500" colspan="4" th:text="#{admin.skills.table.empty}">No skills
+                found.
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="px-6 py-4 border-t" th:if="${skillPage.totalPages > 1}">
+        <nav class="flex justify-between items-center">
+                <span class="text-sm text-gray-700"
+                      th:utext="#{admin.skills.pagination.info(${skillPage.number + 1}, ${skillPage.totalPages}, ${skillPage.totalElements})}">
+                </span>
+            <div>
+            </div>
+        </nav>
+    </div>
+</div>
+</body>
+</html>
