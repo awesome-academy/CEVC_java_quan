@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en"
+      th:replace="~{admin/layout/main-layout :: layout(pageTitleKey=${memberDTO.id == null} ? 'admin.members.form.title.create' : 'admin.members.form.title.edit', content=~{::body}, activePage='members')}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<h1 class="text-2xl font-semibold text-gray-800"
+    th:text="${memberDTO.id == null} ? #{admin.members.form.title.create} : #{admin.members.form.title.edit}">
+    Member Form
+</h1>
+<hr class="my-4"/>
+
+<form class="bg-white shadow-md rounded-lg p-6"
+      method="POST"
+      th:action="${memberDTO.id == null} ? @{/admin/members/save} : @{/admin/members/update/{id}(id=${memberDTO.id})}"
+      th:object="${memberDTO}">
+
+    <input th:field="*{id}" th:if="${memberDTO.id != null}" type="hidden"/>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Column: Account & Personal -->
+        <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4" th:text="#{admin.members.form.section.personal}">
+                Personal</h3>
+
+            <!-- Full Name -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700" th:text="#{admin.members.form.label.fullname}">Full
+                    Name</label>
+                <input class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                       th:field="*{fullName}"
+                       type="text"/>
+                <p class="text-red-600 text-sm mt-1" th:errors="*{fullName}"
+                   th:if="${#fields.hasErrors('fullName')}"></p>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700"
+                       th:text="#{admin.members.form.label.email}">Email</label>
+                <input class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                       th:field="*{email}"
+                       type="email"/>
+                <p class="text-red-600 text-sm mt-1" th:errors="*{email}" th:if="${#fields.hasErrors('email')}"></p>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700" th:text="#{admin.members.form.label.password}">Password</label>
+                <input class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                       th:field="*{password}"
+                       type="password"/>
+                <p class="text-xs text-gray-500 mt-1" th:if="${memberDTO.id != null}"
+                   th:text="#{admin.members.form.label.password.hint}">(Leave blank to keep current)</p>
+                <p class="text-red-600 text-sm mt-1" th:errors="*{password}"
+                   th:if="${#fields.hasErrors('password')}"></p>
+            </div>
+
+            <!-- Birthday -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700" th:text="#{admin.members.form.label.birthday}">Birthday</label>
+                <input class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                       th:field="*{birthday}"
+                       type="date"/>
+            </div>
+
+            <!-- Status -->
+            <div class="mb-4 flex items-center">
+                <input class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                       th:field="*{active}"
+                       type="checkbox">
+                <label class="ml-2 block text-sm text-gray-900"
+                       th:text="#{admin.members.table.status.active}">Active</label>
+            </div>
+        </div>
+
+        <!-- Right Column: Job, Roles, Skills -->
+        <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4" th:text="#{admin.members.form.section.job}">Job &
+                Skills</h3>
+
+            <!-- Position -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700" th:text="#{admin.members.form.label.position}">Position</label>
+                <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        th:field="*{positionId}">
+                    <option text="-- Select Position --" value=""></option>
+                    <option th:each="pos : ${positions}" th:text="${pos.name}" th:value="${pos.id}"></option>
+                </select>
+                <p class="text-red-600 text-sm mt-1" th:errors="*{positionId}"
+                   th:if="${#fields.hasErrors('positionId')}"></p>
+            </div>
+
+            <!-- Roles (Checkboxes) -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2" th:text="#{admin.members.form.label.roles}">Roles</label>
+                <div class="space-y-2">
+                    <div class="flex items-center" th:each="role : ${allRoles}">
+                        <input class="h-4 w-4 text-indigo-600 border-gray-300 rounded" th:field="*{roleIds}"
+                               th:value="${role.id}"
+                               type="checkbox">
+                        <label class="ml-2 text-sm text-gray-700" th:text="${role.name}">Role Name</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills (Checkboxes - Multi-column) -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                       th:text="#{admin.members.form.label.skills}">Skills</label>
+                <div class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border p-2 rounded">
+                    <div class="flex items-center" th:each="skill : ${allSkills}">
+                        <input class="h-4 w-4 text-indigo-600 border-gray-300 rounded" th:field="*{skillIds}"
+                               th:value="${skill.id}"
+                               type="checkbox">
+                        <label class="ml-2 text-sm text-gray-700" th:text="${skill.name}">Skill Name</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="mt-6 flex items-center justify-end gap-x-4 border-t pt-4">
+        <a class="text-sm font-medium text-gray-600 hover:text-gray-800" th:href="@{/admin/members}"
+           th:text="#{admin.members.form.button.cancel}">Cancel</a>
+        <button class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                th:text="#{admin.members.form.button.save}"
+                type="submit">Save Changes
+        </button>
+    </div>
+</form>
+</body>
+</html>

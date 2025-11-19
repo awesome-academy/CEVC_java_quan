@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en"
+      th:replace="~{admin/layout/main-layout :: layout(pageTitleKey='admin.members.title', content=~{::body}, activePage='members')}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-semibold text-gray-800" th:text="#{admin.members.title}">Member List</h1>
+    <div>
+        <a class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 mr-2"
+           th:href="@{/admin/members/export}"
+           th:text="#{admin.members.button.export}">Export CSV</a>
+        <a class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" th:href="@{/admin/members/new}"
+           th:text="#{admin.members.button.new}">Create New Member</a>
+    </div>
+</div>
+
+<div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+        <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                th:text="#{admin.members.table.name}">Name
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                th:text="#{admin.members.table.email}">Email
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                th:text="#{admin.members.table.position}">Position
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                th:text="#{admin.members.table.status}">Status
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase"
+                th:text="#{admin.members.table.actions}">Actions
+            </th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+        <tr th:each="member : ${memberPage.content}">
+            <td class="px-6 py-4">
+                <div class="text-sm font-medium text-gray-900" th:text="${member.fullName}">John Doe</div>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${member.email}">john@example.com</td>
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${member.position.name}">Developer</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                              th:classappend="${member.active} ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                              th:text="${member.active} ? #{admin.members.table.status.active} : #{admin.members.table.status.inactive}">
+                            Active
+                        </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <a class="text-indigo-600 hover:text-indigo-900 mr-4"
+                   th:href="@{/admin/members/edit/{id}(id=${member.id})}"
+                   th:text="#{admin.members.action.edit}">Edit</a>
+
+                <form class="inline" method="POST" onsubmit="return confirm('Are you sure?');"
+                      th:action="@{/admin/members/delete/{id}(id=${member.id})}">
+                    <button class="text-red-600 hover:text-red-900" th:text="#{admin.members.action.delete}"
+                            type="submit">Delete
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination (Simplified for brevity, reuse from Position List) -->
+    <div class="px-6 py-4 border-t" th:if="${memberPage.totalPages > 1}">
+            <span class="text-sm text-gray-700"
+                  th:text="#{admin.positions.pagination.info(${memberPage.number + 1}, ${memberPage.totalPages}, ${memberPage.totalElements})}">
+            </span>
+        <!-- (Add Pagination links here same as Position List) -->
+    </div>
+</div>
+</body>
+</html>
