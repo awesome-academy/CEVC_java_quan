@@ -39,5 +39,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             "LEFT JOIN FETCH m.position " +
             "LEFT JOIN FETCH m.skills")
     List<Member> findAllForExport();
+
+    @Query("SELECT m FROM Member m " +
+            "WHERE NOT EXISTS (" +
+            "  SELECT tm FROM TeamMember tm WHERE tm.member.id = m.id AND tm.isCurrent = true" +
+            ") " +
+            "ORDER BY m.fullName ASC")
+    List<Member> findMembersWithoutActiveTeam();
 }
 

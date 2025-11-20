@@ -21,6 +21,7 @@ public class DataSeeder implements CommandLineRunner {
     private final PositionRepository positionRepository;
     private final ActionTypeRepository actionTypeRepository;
     private final ActorTypeRepository actorTypeRepository;
+    private final TeamRoleRepository teamRoleRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${DEFAULT_ADMIN_EMAIL:admin@mms.com}")
@@ -48,6 +49,10 @@ public class DataSeeder implements CommandLineRunner {
         createActorTypeIfNotFound("ADMIN", "Admin user");
         createActorTypeIfNotFound("USER", "Regular user");
         createActorTypeIfNotFound("SYSTEM", "System process");
+
+        createTeamRoleIfNotFound("LEADER", "Team Leader");
+        createTeamRoleIfNotFound("SUBLEADER", "Vice Leader");
+        createTeamRoleIfNotFound("MEMBER", "Team Member");
 
         if (!memberRepository.existsByEmailIgnoreCase(defaultAdminEmail)) {
             Member admin = Member.builder()
@@ -82,6 +87,19 @@ public class DataSeeder implements CommandLineRunner {
                     pos.setName(name);
                     return positionRepository.save(pos);
                 });
+    }
+
+    private void createTeamRoleIfNotFound(String name, String description) {
+        boolean exists = teamRoleRepository.findAll().stream()
+                .anyMatch(r -> r.getName().equalsIgnoreCase(name));
+
+        if (!exists) {
+            TeamRole role = new TeamRole();
+            role.setName(name);
+            role.setDescription(description);
+            teamRoleRepository.save(role);
+            log.info("Create Team Role: {}", name);
+        }
     }
 
     private void createActionTypeIfNotFound(String code, String desc) {

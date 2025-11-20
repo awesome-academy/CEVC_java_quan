@@ -44,6 +44,13 @@
                th:text="#{layout.sidebar.members}">
                 Member Management
             </a>
+
+            <a class="block px-6 py-3 text-gray-700 hover:bg-gray-100"
+               th:classappend="${activePage == 'teams'} ? 'bg-gray-200' : ''"
+               th:href="@{/admin/teams}"
+               th:text="#{layout.sidebar.teams}">
+                Team Management
+            </a>
         </nav>
     </div>
 

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en"
+      th:replace="~{admin/layout/main-layout :: layout(pageTitleKey=${teamDTO.id == null} ? 'admin.teams.form.title.create' : 'admin.teams.form.title.edit', content=~{::body}, activePage='teams')}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<h1 class="text-2xl font-semibold text-gray-800"
+    th:text="${teamDTO.id == null} ? #{admin.teams.form.title.create} : #{admin.teams.form.title.edit}">
+    Team Form
+</h1>
+<hr class="my-4"/>
+
+<div class="bg-white shadow-md rounded-lg p-6 max-w-lg">
+    <form method="POST"
+          th:action="${teamDTO.id == null} ? @{/admin/teams/save} : @{/admin/teams/update/{id}(id=${teamDTO.id})}"
+          th:object="${teamDTO}">
+
+        <input th:field="*{id}" th:if="${teamDTO.id != null}" type="hidden"/>
+
+        <!-- Trường Name -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700" for="name" th:text="#{admin.teams.form.label.name}">Team
+                Name (*)</label>
+            <input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="name" th:classappend="${#fields.hasErrors('name')} ? 'border-red-500' : ''"
+                   th:field="*{name}"
+                   type="text"/>
+            <p class="mt-1 text-sm text-red-600" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></p>
+        </div>
+
+        <!-- Trường Description -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700" for="description"
+                   th:text="#{admin.teams.form.label.description}">Description</label>
+            <textarea class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="description" rows="3"
+                      th:field="*{description}"></textarea>
+            <p class="mt-1 text-sm text-red-600" th:errors="*{description}"
+               th:if="${#fields.hasErrors('description')}"></p>
+        </div>
+
+        <!-- Trường Leader (Select Box) -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700" for="leaderId"
+                   th:text="#{admin.teams.form.label.leader}">Leader (*)</label>
+            <select class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="leaderId"
+                    th:classappend="${#fields.hasErrors('leaderId')} ? 'border-red-500' : ''"
+                    th:field="*{leaderId}">
+                <option th:text="#{admin.teams.members.option.select_member}" value="">-- Select Leader --</option>
+                <!-- Duyệt qua danh sách members được truyền từ Controller -->
+                <option th:each="member : ${members}"
+                        th:text="${member.fullName} + ' (' + ${member.email} + ')'"
+                        th:value="${member.id}">
+                </option>
+            </select>
+            <p class="mt-1 text-sm text-red-600" th:errors="*{leaderId}" th:if="${#fields.hasErrors('leaderId')}"></p>
+        </div>
+
+        <!-- Nút bấm -->
+        <div class="mt-6 flex items-center justify-end gap-x-4">
+            <a class="text-sm font-medium text-gray-600 hover:text-gray-800" th:href="@{/admin/teams}"
+               th:text="#{admin.teams.form.button.cancel}">
+                Cancel
+            </a>
+            <button class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" th:text="#{admin.teams.form.button.save}"
+                    type="submit">
+                Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
