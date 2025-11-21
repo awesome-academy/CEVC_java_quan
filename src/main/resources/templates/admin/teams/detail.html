@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en"
+      th:replace="~{admin/layout/main-layout :: layout(pageTitleKey='admin.teams.detail.title', content=~{::body}, activePage='teams')}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Team Header Info -->
+<div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-start">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900" th:text="${team.name}">Team Name</h1>
+            <p class="text-gray-600 mt-1" th:text="${team.description}">Description</p>
+        </div>
+        <div class="text-right">
+            <span class="text-sm text-gray-500" th:text="#{admin.teams.table.leader}">Leader</span>
+            <p class="font-medium text-gray-900" th:text="${team.leader.fullName}">Leader Name</p>
+        </div>
+    </div>
+</div>
+
+<!-- Member List -->
+<div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+        <h3 class="text-lg font-medium text-gray-900" th:text="#{admin.teams.members.title}">Members</h3>
+
+        <!-- Add Member Form -->
+        <form class="flex gap-2" method="POST" th:action="@{/admin/teams/{id}/members/add(id=${team.id})}">
+            <select class="text-sm border-gray-300 rounded-md" name="memberId" required>
+                <option th:text="#{admin.teams.members.option.select_member}" value="">Select Member</option>
+                <option th:each="m : ${availableMembers}" th:text="${m.fullName}" th:value="${m.id}"></option>
+            </select>
+            <select class="text-sm border-gray-300 rounded-md" name="teamRoleId" required>
+                <option th:each="r : ${teamRoles}" th:text="${r.name}" th:value="${r.id}"></option>
+            </select>
+            <button class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700" th:text="#{admin.teams.members.button.add}"
+                    type="submit">Add
+            </button>
+        </form>
+    </div>
+
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+        <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                th:text="#{admin.teams.members.table.name}">Name
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                th:text="#{admin.teams.members.table.email}">Email
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                th:text="#{admin.teams.members.table.role}">Role
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                th:text="#{admin.teams.members.table.joined}">Joined
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase"
+                th:text="#{admin.teams.members.table.actions}">Action
+            </th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+        <tr th:each="tm : ${team.teamMembers}" th:if="${tm.isCurrent}">
+            <td class="px-6 py-4 text-sm font-medium text-gray-900" th:text="${tm.member.fullName}">Name</td>
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${tm.member.email}">Email</td>
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${tm.teamRole.name}">Dev</td>
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${tm.startDate}">2023-01-01</td>
+            <td class="px-6 py-4 text-right text-sm font-medium">
+                <form class="inline" method="POST" onsubmit="return confirm(this.getAttribute('data-confirm-message'));"
+                      th:action="@{/admin/teams/{id}/members/remove(id=${team.id})}"
+                      th:data-confirm-message="#{admin.teams.members.remove.confirm}">
+                    <input name="memberId" th:value="${tm.member.id}" type="hidden">
+                    <button class="text-red-600 hover:text-red-900" th:text="#{admin.teams.members.action.remove}"
+                            type="submit">Remove
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

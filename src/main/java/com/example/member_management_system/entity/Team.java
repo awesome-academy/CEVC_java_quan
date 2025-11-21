@@ -1,10 +1,7 @@
 package com.example.member_management_system.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -14,8 +11,11 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-@Table(name = "teams")
-@Data
+@Table(name = "teams", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name", "is_active_idx"})
+})
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -27,10 +27,14 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String name;
 
     private String description;
+
+    @Column(name = "is_active_idx", insertable = false, updatable = false,
+            columnDefinition = "TINYINT GENERATED ALWAYS AS (IF(deleted_at IS NULL, 1, NULL)) VIRTUAL")
+    private Integer isActiveIdx;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
