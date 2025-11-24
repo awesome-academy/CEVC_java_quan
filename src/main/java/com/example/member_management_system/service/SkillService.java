@@ -3,6 +3,7 @@ package com.example.member_management_system.service;
 import com.example.member_management_system.dto.ImportResultDTO;
 import com.example.member_management_system.dto.SkillDTO;
 import com.example.member_management_system.entity.Skill;
+import com.example.member_management_system.exception.DuplicateResourceException;
 import com.example.member_management_system.exception.ResourceNotFoundException;
 import com.example.member_management_system.repository.SkillRepository;
 import jakarta.validation.ConstraintViolation;
@@ -189,8 +190,11 @@ public class SkillService {
     private void validateSkillName(String name, Long currentId) {
         Optional<Skill> existing = skillRepository.findByNameIgnoreCase(name);
         if (existing.isPresent() && (currentId == null || !existing.get().getId().equals(currentId))) {
-            String errorMessage = getI18nMessage("admin.skills.form.error.duplicate", name);
-            throw new IllegalArgumentException(errorMessage);
+            throw new DuplicateResourceException(
+                    getI18nMessage("admin.skills.form.error.duplicate", name),
+                    "name",
+                    name
+            );
         }
     }
 

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en"
+      th:replace="~{admin/layout/main-layout :: layout(pageTitleKey=${projectDTO.id == null} ? 'admin.projects.form.title.create' : 'admin.projects.form.title.edit', content=~{::body}, activePage='projects')}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<h1 class="text-2xl font-semibold text-gray-800"
+    th:text="${projectDTO.id == null} ? #{admin.projects.form.title.create} : #{admin.projects.form.title.edit}">
+    Project Form
+</h1>
+<hr class="my-4"/>
+
+<div class="bg-white shadow-md rounded-lg p-6 max-w-2xl">
+    <form method="POST"
+          th:action="${projectDTO.id == null} ? @{/admin/projects/save} : @{/admin/projects/update/{id}(id=${projectDTO.id})}"
+          th:object="${projectDTO}">
+
+        <input th:field="*{id}" th:if="${projectDTO.id != null}" type="hidden"/>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Name -->
+            <div class="col-span-2">
+                <label class="block text-sm font-medium text-gray-700" th:text="#{admin.projects.form.label.name}">Name
+                    (*)</label>
+                <input class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                       th:field="*{name}"
+                       type="text"/>
+                <p class="mt-1 text-sm text-red-600" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></p>
+            </div>
+
+            <!-- Abbr -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700"
+                       th:text="#{admin.projects.form.label.abbreviation}">Abbr</label>
+                <input class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                       th:field="*{abbreviation}"
+                       type="text"/>
+            </div>
+
+            <!-- Team -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700" th:text="#{admin.projects.form.label.team}">Team
+                    (*)</label>
+                <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        th:field="*{teamId}">
+                    <option th:text="#{admin.projects.form.option.select_team}" value="">-- Select Team --</option>
+                    <option th:each="t : ${teams}" th:text="${t.name}" th:value="${t.id}"></option>
+                </select>
+                <p class="mt-1 text-sm text-red-600" th:errors="*{teamId}" th:if="${#fields.hasErrors('teamId')}"></p>
+            </div>
+
+            <!-- Leader (PM) -->
+            <div class="col-span-2">
+                <label class="block text-sm font-medium text-gray-700"
+                       th:text="#{admin.projects.form.label.leader}">PM</label>
+                <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        th:field="*{leaderId}">
+                    <option th:text="#{admin.projects.form.option.select_leader}" value="">-- Select PM --</option>
+                    <option th:each="m : ${members}" th:text="${m.fullName}" th:value="${m.id}"></option>
+                </select>
+            </div>
+
+            <!-- Dates -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700"
+                       th:text="#{admin.projects.form.label.start_date}">Start Date</label>
+                <input class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                       th:field="*{startDate}"
+                       type="date"/>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700" th:text="#{admin.projects.form.label.end_date}">End
+                    Date</label>
+                <input class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                       th:field="*{endDate}"
+                       type="date"/>
+                <p class="mt-1 text-sm text-red-600" th:errors="*{endDate}" th:if="${#fields.hasErrors('endDate')}"></p>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-6 flex items-center justify-end gap-x-4">
+            <a class="text-sm font-medium text-gray-600 hover:text-gray-800" th:href="@{/admin/projects}"
+               th:text="#{admin.projects.form.button.cancel}">Cancel</a>
+            <button class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                    th:text="#{admin.projects.form.button.save}"
+                    type="submit">Save
+            </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

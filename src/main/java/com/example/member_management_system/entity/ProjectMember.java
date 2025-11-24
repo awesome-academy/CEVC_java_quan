@@ -1,55 +1,39 @@
 package com.example.member_management_system.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "project_members")
-@Data
+@Table(name = "project_members", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"project_id", "member_id", "project_role_id"})
+})
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@IdClass(ProjectMemberId.class)
-public class ProjectMember {
+public class ProjectMember extends BaseEntity {
 
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "project_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "member_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "project_role_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_role_id", nullable = false)
     private ProjectRole projectRole;
 
-    @Column(name = "assigned_at", nullable = false, updatable = false)
+    @CreationTimestamp
+    @Column(name = "assigned_at", updatable = false)
     private LocalDateTime assignedAt;
 
     @Column(name = "unassigned_at")
     private LocalDateTime unassignedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.assignedAt = LocalDateTime.now();
-    }
-
-    // === Helper methods ===
-    @Transient
-    public boolean isActive() {
-        return this.unassignedAt == null;
-    }
-
-    public void markUnassigned() {
-        this.unassignedAt = LocalDateTime.now();
-    }
 }

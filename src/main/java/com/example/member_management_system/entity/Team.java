@@ -21,11 +21,7 @@ import java.util.Set;
 @Builder
 @SQLDelete(sql = "UPDATE teams SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Where(clause = "deleted_at IS NULL")
-public class Team {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Team extends BaseEntity {
 
     @Column(nullable = false)
     private String name;

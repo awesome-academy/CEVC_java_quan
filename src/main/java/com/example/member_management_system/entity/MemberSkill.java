@@ -1,14 +1,12 @@
 package com.example.member_management_system.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "member_skills")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -24,4 +22,18 @@ public class MemberSkill {
     @ManyToOne
     @JoinColumn(name = "skill_id")
     private Skill skill;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MemberSkill)) return false;
+        MemberSkill that = (MemberSkill) o;
+        return member != null && skill != null &&
+                member.equals(that.member) && skill.equals(that.skill);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

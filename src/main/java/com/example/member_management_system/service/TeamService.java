@@ -7,6 +7,7 @@ import com.example.member_management_system.entity.Team;
 import com.example.member_management_system.entity.TeamMember;
 import com.example.member_management_system.entity.TeamRole;
 import com.example.member_management_system.exception.BusinessException;
+import com.example.member_management_system.exception.DuplicateResourceException;
 import com.example.member_management_system.exception.ResourceNotFoundException;
 import com.example.member_management_system.repository.MemberRepository;
 import com.example.member_management_system.repository.TeamMemberRepository;
@@ -161,7 +162,11 @@ public class TeamService {
         Optional<Team> existing = teamRepository.findByNameIgnoreCase(name);
 
         if (existing.isPresent() && (currentId == null || !existing.get().getId().equals(currentId))) {
-            throw new IllegalArgumentException(getI18nMessage("admin.teams.form.error.duplicate", name));
+            throw new DuplicateResourceException(
+                    getI18nMessage("admin.teams.form.error.duplicate", name),
+                    "name",
+                    name
+            );
         }
     }
 

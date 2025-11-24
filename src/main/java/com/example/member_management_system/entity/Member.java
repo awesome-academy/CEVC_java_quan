@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,11 +24,7 @@ import java.util.stream.Collectors;
 @Builder
 @SQLDelete(sql = "UPDATE members SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Where(clause = "deleted_at IS NULL")
-public class Member implements UserDetails {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Member extends BaseEntity implements UserDetails {
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -130,18 +125,5 @@ public class Member implements UserDetails {
     @Override
     public boolean isEnabled() {
         return this.isActive;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Member)) return false;
-        Member member = (Member) o;
-        return id != null && Objects.equals(id, member.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
     }
 }

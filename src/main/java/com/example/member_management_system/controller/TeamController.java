@@ -4,6 +4,7 @@ import com.example.member_management_system.dto.TeamDTO;
 import com.example.member_management_system.dto.TeamMemberAssignmentDTO;
 import com.example.member_management_system.entity.Member;
 import com.example.member_management_system.entity.Team;
+import com.example.member_management_system.exception.DuplicateResourceException;
 import com.example.member_management_system.repository.MemberRepository;
 import com.example.member_management_system.repository.TeamRoleRepository;
 import com.example.member_management_system.service.TeamService;
@@ -63,7 +64,7 @@ public class TeamController {
         try {
             teamService.createTeam(teamDTO);
             redirectAttributes.addFlashAttribute("successMessageKey", "team.create.success");
-        } catch (IllegalArgumentException e) {
+        } catch (DuplicateResourceException e) {
             bindingResult.rejectValue("name", "duplicate", e.getMessage());
             model.addAttribute("members", getFreeMembers());
 
@@ -106,7 +107,7 @@ public class TeamController {
         try {
             teamService.updateTeam(id, teamDTO);
             redirectAttributes.addFlashAttribute("successMessageKey", "team.update.success");
-        } catch (IllegalArgumentException e) {
+        } catch (DuplicateResourceException e) {
             bindingResult.rejectValue("name", "duplicate", e.getMessage());
             model.addAttribute("members", getFreeMembers());
 

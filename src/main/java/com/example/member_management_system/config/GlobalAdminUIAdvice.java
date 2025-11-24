@@ -22,7 +22,7 @@ public class GlobalAdminUIAdvice {
         if (servletPath.startsWith("/admin/dashboard")) {
             return "dashboard";
         }
-        
+
         if (servletPath.startsWith("/admin/positions")) {
             return "positions";
         }
