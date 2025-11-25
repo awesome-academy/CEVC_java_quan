@@ -2,6 +2,7 @@ package com.example.member_management_system.controller;
 
 import com.example.member_management_system.dto.MemberDTO;
 import com.example.member_management_system.entity.Member;
+import com.example.member_management_system.exception.DuplicateResourceException;
 import com.example.member_management_system.repository.PositionRepository;
 import com.example.member_management_system.repository.RoleRepository;
 import com.example.member_management_system.repository.SkillRepository;
@@ -74,7 +75,7 @@ public class MemberController {
         try {
             memberService.createMember(memberDTO);
             redirectAttributes.addFlashAttribute("successMessageKey", "member.create.success");
-        } catch (IllegalArgumentException e) {
+        } catch (DuplicateResourceException e) {
             bindingResult.rejectValue("email", "duplicate", e.getMessage());
 
             return "admin/members/form";
@@ -110,7 +111,7 @@ public class MemberController {
         try {
             memberService.updateMember(id, memberDTO);
             redirectAttributes.addFlashAttribute("successMessageKey", "member.update.success");
-        } catch (IllegalArgumentException e) {
+        } catch (DuplicateResourceException e) {
             bindingResult.rejectValue("email", "duplicate", e.getMessage());
 
             return "admin/members/form";

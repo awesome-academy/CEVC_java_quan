@@ -5,6 +5,7 @@ import com.example.member_management_system.entity.Member;
 import com.example.member_management_system.entity.Position;
 import com.example.member_management_system.entity.Role;
 import com.example.member_management_system.entity.Skill;
+import com.example.member_management_system.exception.DuplicateResourceException;
 import com.example.member_management_system.exception.ResourceNotFoundException;
 import com.example.member_management_system.repository.MemberRepository;
 import com.example.member_management_system.repository.PositionRepository;
@@ -145,7 +146,11 @@ public class MemberService {
     private void validateEmail(String email, Long currentId) {
         Optional<Member> existing = memberRepository.findByEmailWithRoles(email); // Reuse existing query
         if (existing.isPresent() && (currentId == null || !existing.get().getId().equals(currentId))) {
-            throw new IllegalArgumentException(getI18nMessage("admin.members.form.error.email.duplicate", email));
+            throw new DuplicateResourceException(
+                    getI18nMessage("admin.members.form.error.email.duplicate", email),
+                    "email",
+                    email
+            );
         }
     }
 

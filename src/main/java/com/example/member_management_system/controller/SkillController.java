@@ -3,6 +3,7 @@ package com.example.member_management_system.controller;
 import com.example.member_management_system.dto.ImportResultDTO;
 import com.example.member_management_system.dto.SkillDTO;
 import com.example.member_management_system.entity.Skill;
+import com.example.member_management_system.exception.DuplicateResourceException;
 import com.example.member_management_system.service.SkillService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -76,7 +77,7 @@ public class SkillController {
             redirectAttributes.addFlashAttribute("successMessageKey", "skill.create.success");
 
             return "redirect:/admin/skills";
-        } catch (IllegalArgumentException e) {
+        } catch (DuplicateResourceException e) {
             bindingResult.rejectValue("name", "duplicate", e.getMessage());
 
             return "admin/skills/form";
@@ -114,7 +115,7 @@ public class SkillController {
             redirectAttributes.addFlashAttribute("successMessageKey", "skill.update.success");
 
             return "redirect:/admin/skills";
-        } catch (IllegalArgumentException e) {
+        } catch (DuplicateResourceException e) {
             bindingResult.rejectValue("name", "duplicate", e.getMessage());
 
             return "admin/skills/form";

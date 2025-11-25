@@ -12,10 +12,7 @@ import java.time.LocalDate;
 })
 @Getter
 @Setter
-public class TeamMember {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class TeamMember extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
