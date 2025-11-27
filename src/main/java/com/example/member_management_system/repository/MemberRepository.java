@@ -28,6 +28,16 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             "WHERE m.id = :id")
     Optional<Member> findByIdWithDetails(@Param("id") Long id);
 
+    // Used for User Profile - Fetch all relations including teamMembers in a single query
+    @Query("SELECT DISTINCT m FROM Member m " +
+            "LEFT JOIN FETCH m.position p " +
+            "LEFT JOIN FETCH m.skills s " +
+            "LEFT JOIN FETCH m.teamMembers tm " +
+            "LEFT JOIN FETCH tm.team t " +
+            "LEFT JOIN FETCH tm.teamRole tr " +
+            "WHERE LOWER(m.email) = LOWER(:email)")
+    Optional<Member> findByEmailWithAllDetails(@Param("email") String email);
+
     // Used for List View - Fetch Position to avoid N+1
     // (Note: We don't fetch roles/skills here for performance, unless needed in table)
     @Query(value = "SELECT m FROM Member m JOIN FETCH m.position",
