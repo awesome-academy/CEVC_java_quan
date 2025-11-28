@@ -37,7 +37,7 @@ public class SkillLookupService {
      * @param size       page size
      * @return paginated skills response
      */
-    @Cacheable(value = "skills", key = "#searchTerm + '_' + #page + '_' + #size", unless = "#result == null")
+    @Cacheable(value = "skills", key = "(#searchTerm != null ? #searchTerm : 'all') + '_' + #page + '_' + #size", unless = "#result == null")
     public SkillsPageResponse getSkills(String searchTerm, int page, int size) {
         log.info("Fetching skills - searchTerm: {}, page: {}, size: {}", searchTerm, page, size);
 

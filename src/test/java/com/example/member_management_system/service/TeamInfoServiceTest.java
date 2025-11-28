@@ -31,7 +31,6 @@ class TeamInfoServiceTest {
     @Mock
     private TeamRepository teamRepository;
 
-
     @InjectMocks
     private TeamInfoService teamInfoService;
 

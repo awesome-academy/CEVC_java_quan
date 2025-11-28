@@ -23,7 +23,7 @@ public interface SkillRepository extends JpaRepository<Skill, Long> {
      * @param pageable   pagination information
      * @return page of skills matching the search term
      */
-    @Query("SELECT s FROM Skill s WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) ORDER BY s.name ASC")
+    @Query("SELECT s FROM Skill s WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     Page<Skill> searchByName(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     /**
