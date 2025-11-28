@@ -57,4 +57,14 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Lo
             "WHERE pm.project.id = :projectId " +
             "ORDER BY pm.unassignedAt ASC NULLS FIRST, pm.assignedAt DESC")
     List<ProjectMember> findProjectMembersWithDetails(@Param("projectId") Long projectId);
+
+    /**
+     * Get active member counts for multiple projects in a single query
+     * Returns a map of project ID to member count
+     * This avoids N+1 query problem when fetching counts for multiple projects
+     */
+    @Query("SELECT pm.project.id, COUNT(pm) FROM ProjectMember pm " +
+            "WHERE pm.project.id IN :projectIds AND pm.unassignedAt IS NULL " +
+            "GROUP BY pm.project.id")
+    List<Object[]> countActiveMembersByProjectIds(@Param("projectIds") List<Long> projectIds);
 }

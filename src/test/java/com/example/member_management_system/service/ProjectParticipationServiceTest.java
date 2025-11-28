@@ -19,8 +19,7 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -104,8 +103,11 @@ class ProjectParticipationServiceTest {
         // Given
         when(projectMemberRepository.findActiveProjectsByMemberEmail(anyString()))
                 .thenReturn(Collections.singletonList(testProjectMember));
-        when(projectMemberRepository.findByProjectIdAndUnassignedAtIsNull(anyLong()))
-                .thenReturn(Arrays.asList(testProjectMember, new ProjectMember(), new ProjectMember()));
+
+        // Mock batch member count query
+        Object[] countResult = new Object[]{1L, 3L}; // projectId, count
+        when(projectMemberRepository.countActiveMembersByProjectIds(anyList()))
+                .thenReturn(Collections.singletonList(countResult));
 
         // When
         List<UserProjectResponse> responses = projectParticipationService.getUserProjects("test@example.com");
@@ -129,7 +131,7 @@ class ProjectParticipationServiceTest {
         assertThat(response.getTeam().getName()).isEqualTo("Backend Team");
 
         verify(projectMemberRepository).findActiveProjectsByMemberEmail("test@example.com");
-        verify(projectMemberRepository).findByProjectIdAndUnassignedAtIsNull(1L);
+        verify(projectMemberRepository).countActiveMembersByProjectIds(anyList());
     }
 
     @Test
@@ -146,7 +148,7 @@ class ProjectParticipationServiceTest {
         assertThat(responses).isEmpty();
 
         verify(projectMemberRepository).findActiveProjectsByMemberEmail("test@example.com");
-        verify(projectMemberRepository, never()).findByProjectIdAndUnassignedAtIsNull(anyLong());
+        verify(projectMemberRepository, never()).countActiveMembersByProjectIds(anyList());
     }
 
     @Test

@@ -21,6 +21,7 @@ public class TeamInfoService {
 
     private final TeamMemberRepository teamMemberRepository;
     private final TeamRepository teamRepository;
+    private final ActivityLogService activityLogService;
 
     /**
      * Get current team information for the authenticated user
@@ -57,6 +58,15 @@ public class TeamInfoService {
                 .joinedDate(teamMember.getStartDate())
                 .memberCount((int) memberCount)
                 .build();
+
+        // Log view activity for audit trail
+        activityLogService.logActivity(
+                email,
+                "VIEW",
+                "User viewed current team details: " + teamMember.getTeam().getName(),
+                "teams",
+                teamMember.getTeam().getId()
+        );
 
         log.info("Retrieved current team for user: {}", email);
         return response;

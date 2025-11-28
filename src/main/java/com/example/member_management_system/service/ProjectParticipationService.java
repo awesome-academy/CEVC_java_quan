@@ -35,9 +35,30 @@ public class ProjectParticipationService {
         // Fetch all active project memberships with details in a single query
         List<ProjectMember> projectMembers = projectMemberRepository.findActiveProjectsByMemberEmail(email);
 
-        // Convert to response DTOs
+        // If no projects, return empty list
+        if (projectMembers.isEmpty()) {
+            log.info("No active projects found for user: {}", email);
+            return List.of();
+        }
+
+        // Batch fetch member counts for all projects to avoid N+1 query problem
+        List<Long> projectIds = projectMembers.stream()
+                .map(pm -> pm.getProject().getId())
+                .collect(Collectors.toList());
+
+        // Get member counts in a single batch query
+        List<Object[]> memberCounts = projectMemberRepository.countActiveMembersByProjectIds(projectIds);
+
+        // Convert to map for O(1) lookup: projectId -> count
+        java.util.Map<Long, Long> memberCountMap = memberCounts.stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> (Long) row[1]
+                ));
+
+        // Convert to response DTOs using the pre-fetched counts
         List<UserProjectResponse> responses = projectMembers.stream()
-                .map(this::buildUserProjectResponse)
+                .map(pm -> buildUserProjectResponse(pm, memberCountMap))
                 .collect(Collectors.toList());
 
         log.info("Retrieved {} active projects for user: {}", responses.size(), email);
@@ -91,16 +112,21 @@ public class ProjectParticipationService {
 
     /**
      * Helper method to build UserProjectResponse from ProjectMember entity
-     * Avoids code duplication
+     * Uses pre-fetched member count map to avoid N+1 queries
      *
-     * @param projectMember ProjectMember entity with all relationships loaded
+     * @param projectMember  ProjectMember entity with all relationships loaded
+     * @param memberCountMap Map of project ID to active member count
      * @return UserProjectResponse
      */
-    private UserProjectResponse buildUserProjectResponse(ProjectMember projectMember) {
-        // Count active members in the project
-        long memberCount = projectMemberRepository
-                .findByProjectIdAndUnassignedAtIsNull(projectMember.getProject().getId())
-                .size();
+    private UserProjectResponse buildUserProjectResponse(
+            ProjectMember projectMember,
+            java.util.Map<Long, Long> memberCountMap
+    ) {
+        // Get member count from pre-fetched map (default to 0 if not found)
+        int memberCount = memberCountMap.getOrDefault(
+                projectMember.getProject().getId(),
+                0L
+        ).intValue();
 
         // Build team info
         UserProjectResponse.TeamInfo teamInfo = UserProjectResponse.TeamInfo.builder()
@@ -118,7 +144,7 @@ public class ProjectParticipationService {
                 .userRole(projectMember.getProjectRole().getName())
                 .assignedAt(projectMember.getAssignedAt())
                 .team(teamInfo)
-                .memberCount((int) memberCount)
+                .memberCount(memberCount)
                 .build();
     }
 
